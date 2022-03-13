@@ -7,6 +7,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -225,8 +226,8 @@ public class OpenGLChartsView extends JPanel {
 				
 				// work around java 9+ dpi scaling problem with JOGL
 				displayScalingFactorJava9 = (float) ((Graphics2D) getGraphics()).getTransform().getScaleX();
-				width = (int) (width * displayScalingFactorJava9);
-				height = (int) (height * displayScalingFactorJava9);
+				width = (int) (width * displayScalingFactorJava9)/2;//Workaround for mouse half graphics
+				height = (int) (height * displayScalingFactorJava9)/2;
 				gl.glViewport(0, 0, width, height);
 				
 				OpenGL.makeOrthoMatrix(screenMatrix, 0, width, 0, height, -100000, 100000);
@@ -785,7 +786,8 @@ public class OpenGLChartsView extends JPanel {
 				
 				mouseX = (int) (me.getX() * displayScalingFactorJava9);
 				mouseY = (int) ((glCanvas.getHeight() - me.getY()) * displayScalingFactorJava9);
-				
+		        System.out.println("X:" + mouseX);
+		        System.out.println("Y:" + mouseY);
 				if(eventHandler != null && eventHandler.forDragEvent) {
 					eventHandler.handleMouseLocation(mouseXYtoChartXY(eventHandler.chart, me.getX(), me.getY()));
 					return;
@@ -814,7 +816,7 @@ public class OpenGLChartsView extends JPanel {
 				
 				mouseX = (int) (me.getX() * displayScalingFactorJava9);
 				mouseY = (int) ((glCanvas.getHeight() - me.getY()) * displayScalingFactorJava9);
-				
+
 			}
 			
 		});
@@ -1006,9 +1008,11 @@ public class OpenGLChartsView extends JPanel {
 			return new Point(-1, -1);
 		
 		// convert from MouseEvent coordinates to glCanvas coordinates, and invert the y-axis so (0,0) is now the lower-left corner
-		mouseX = (int) (mouseX * displayScalingFactorJava9);
-		mouseY = (int) ((glCanvas.getHeight() - mouseY) * displayScalingFactorJava9);
 		
+		mouseX = (int) (mouseX * displayScalingFactorJava9 * 2); // Workaround for incorrect mouse position
+		mouseY = (int) ((glCanvas.getHeight() - mouseY) * displayScalingFactorJava9 * 2);
+        System.out.println("X:" + mouseX);
+        System.out.println("Y:" + mouseY);
 		// determine the chart's coordinates relative to the glCanvas
 		int tileWidth  = canvasWidth  / tileColumns;
 		int tileHeight = (canvasHeight - notificationsHeight) / tileRows;
@@ -1280,7 +1284,7 @@ public class OpenGLChartsView extends JPanel {
 		// draw the rectangle
 		OpenGL.drawBoxOutline(gl, mouseOverButton ? white : black, buttonXleft + inset, buttonYbottom + inset, buttonWidth - 2*inset, buttonWidth - 2*inset);
 		OpenGL.drawBox(gl, mouseOverButton ? white : black, buttonXleft + inset, buttonYtop - inset - (inset / 1.5f), buttonWidth - 2*inset, inset / 1.5f);
-		
+
 		// event handler
 		if(mouseOverButton)
 			eventHandler = EventHandler.onPress(event -> {

@@ -87,15 +87,16 @@ public class Main {
 		NotificationsController.showHintUntil("Start by connecting to a device or opening a file by using the buttons below.", () -> false, true);
 		
 		window.setSize(window.getPreferredSize());
-		window.setMinimumSize(window.getMinimumSize());
+		//window.setMinimumSize(window.getMinimumSize());
 		window.setLocationRelativeTo(null);
-		window.setExtendedState(JFrame.MAXIMIZED_BOTH);
+		//window.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		
 		// support smooth scrolling
 		window.addWindowFocusListener(new WindowFocusListener() {
 			@Override public void windowGainedFocus(WindowEvent we) { mouse.updateScrolling(); }
 			@Override public void windowLostFocus(WindowEvent we)   { }
 		});
+		
 		
 		// allow the user to drag-n-drop settings/CSV/camera files
 		window.setDropTarget(new DropTarget() {			
